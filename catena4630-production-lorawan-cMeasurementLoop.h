@@ -13,8 +13,8 @@ Author:
 
 */
 
-#ifndef _cMeasurementLoop_h_
-# define _cMeasurementLoop_h_
+#ifndef _catena4630-production-lorawan-cMeasurementLoop_h_
+# define _catena4630-production-lorawan-cMeasurementLoop_h_
 
 #pragma once
 
@@ -319,4 +319,4 @@ static cMeasurementLoop::Flags operator|= (cMeasurementLoop::Flags &lhs, const c
         return lhs;
         };
 
-#endif /* _cMeasurementLoop_h_ */
+#endif /* _catena4630-production-lorawan-cMeasurementLoop_h_ */
