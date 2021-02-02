@@ -1,6 +1,6 @@
 /*
 
-Module: catena4630-production-lorawan-commands.cpp
+Module: model4841-production-lorawan-commands.cpp
 
 Function:
     Command dispatch functions; separate compile due to bug in Arduino env.
@@ -14,7 +14,7 @@ Author:
 */
 
 #include <Arduino.h>
-#include "catena4630-production-lorawan-cMeasurementLoop.h"
+#include "model4841-production-lorawan-cMeasurementLoop.h"
 
 #include <Wire.h>
 #include <Catena.h>

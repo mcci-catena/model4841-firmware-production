@@ -1,12 +1,12 @@
 /*
 
-Module:	message-port1-format-20-test.cpp
+Module:	message-port1-format-21-test.cpp
 
 Function:
-	Test vector generator for port 1, format 0x20, 21
+	Test vector generator for port 1, format 21
 
 Copyright and License:
-	This file copyright (C) 2019 by
+	This file copyright (C) 2019, 2021 by
 
 		MCCI Corporation
 		3520 Krums Corners Road
@@ -22,7 +22,8 @@ Author:
 // To build:
 //  Open a Visual Studio 2019 C++ command line window. Then:
 //
-//  C> cl /EHsc catena-message-port1-format-20-test.cpp
+//  C> cl /EHsc catena-message-port1-format-21-test.cpp
+
 #include <cmath>
 #include <cstdint>
 #include <iostream>
@@ -49,7 +50,6 @@ struct val
 struct env
     {
     float t;
-    float p;
     float rh;
     };
 
@@ -157,11 +157,6 @@ std::uint16_t encodeT(float v)
     return encode16s(v * 256.0f);
     }
 
-std::uint16_t encodeP(float v)
-    {
-    return encode16u(v * 25.0f);
-    }
-
 std::uint16_t encodeRH(float v)
     {
     return encode16u(v * 65535.0f / 100.0f);
@@ -200,7 +195,7 @@ void encodeMeasurement(Buffer &buf, Measurements &m)
 
     // sent the type byte
     buf.clear();
-    buf.push_back(0x20);
+    buf.push_back(0x21);
     buf.push_back(0u); // flag byte.
 
     // put the fields
@@ -233,7 +228,6 @@ void encodeMeasurement(Buffer &buf, Measurements &m)
         flags |= 1 << 4;
 
         buf.push_back_be(encodeT(m.Env.v.t));
-        buf.push_back_be(encodeP(m.Env.v.p));
         buf.push_back_be(encodeRH(m.Env.v.rh));
         }
 
@@ -315,7 +309,6 @@ void logMeasurement(Measurements &m)
     if (m.Env.fValid)
         {
         std::cout << pad.get() << "Env " << m.Env.v.t << " "
-                                         << m.Env.v.p << " "
                                          << m.Env.v.rh;
         }
 
@@ -448,7 +441,7 @@ int main(int argc, char **argv)
             }
         else if (key == "Env")
             {
-            std::cin >> m.Env.v.t >> m.Env.v.p >> m.Env.v.rh;
+            std::cin >> m.Env.v.t >> m.Env.v.rh;
             m.Env.fValid = true;
             }
         else if (key == "Pm")

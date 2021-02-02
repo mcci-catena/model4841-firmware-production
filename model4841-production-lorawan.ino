@@ -1,6 +1,6 @@
 /*
 
-Module: catena4630-production-lorawan.ino
+Module: model4841-production-lorawan.ino
 
 Function:
     Sensor sketch measuring and transmitting air-quality info.
@@ -10,6 +10,8 @@ Copyright:
 
 Author:
     Terry Moore, MCCI Corporation   July 2019
+    Dhinesh Kumar, MCCI Corporation February 2021
+    Sungjoon Park, MCCI Corporation February 2021
 
 */
 
@@ -18,7 +20,7 @@ Author:
 #endif
 
 #include <Arduino.h>
-#include "catena4630-production-lorawan-cMeasurementLoop.h"
+#include "model4841-production-lorawan-cMeasurementLoop.h"
 
 #include <Wire.h>
 #include <Catena.h>
@@ -329,7 +331,7 @@ void loop()
 |
 \****************************************************************************/
 
-void delayByPolling(void *pClientData, std::uint32_t ms)
+static void delayByPolling(void *pClientData, std::uint32_t ms)
     {
     auto last = micros();
     std::int64_t us = std::uint64_t(ms) * 1000;

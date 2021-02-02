@@ -1,6 +1,6 @@
 /*
 
-Module: catena4630-production-lorawan-cMeasurementLoop.h
+Module: model4841-production-lorawan-cMeasurementLoop.h
 
 Function:
     cMeasurementLoop definitions.
@@ -13,8 +13,8 @@ Author:
 
 */
 
-#ifndef _catena4630-production-lorawan-cMeasurementLoop_h_
-# define _catena4630-production-lorawan-cMeasurementLoop_h_
+#ifndef _model4841_production_lorawan_cMeasurementLoop_h_
+# define _model4841_production_lorawan_cMeasurementLoop_h_
 
 #pragma once
 
@@ -319,4 +319,4 @@ static cMeasurementLoop::Flags operator|= (cMeasurementLoop::Flags &lhs, const c
         return lhs;
         };
 
-#endif /* _catena4630-production-lorawan-cMeasurementLoop_h_ */
+#endif /* _model4841_production_lorawan_cMeasurementLoop_h_ */

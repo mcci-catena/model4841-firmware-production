@@ -1,6 +1,6 @@
-# Catena 4630 Production LoRaWAN
+# Model 4841 Production for LoRaWAN&reg; Technology
 
-The MCCI&reg; Catena 4630 is with LoRaWAN&reg; technology combines a high-quality Air Quality and Dust sensor with a LoRaWAN transceiver to monitor the air quality and dust particle measurement. This repository contains the production firmware.
+This sketch is the production firmware for the MCCI&reg; Model 4841 Air Quality Sensor.
 
 **Contents:**
 <!--
@@ -17,41 +17,45 @@ The MCCI&reg; Catena 4630 is with LoRaWAN&reg; technology combines a high-qualit
 <!-- TOC depthFrom:2 updateOnSave:true -->
 
 - [System configuration](#system-configuration)
-    - [Sample interval](#sample-interval)
+	- [Sample interval](#sample-interval)
 - [Activities](#activities)
 - [Primary Data Acquisition](#primary-data-acquisition)
 - [Uplink Data](#uplink-data)
-    - [port 1](#port-1)
-    - [Bitmap fields and associated fields](#bitmap-fields-and-associated-fields)
-    - [Battery voltage](#battery-voltage-field-0)
-    - [System voltage](#sys-voltage-field-1)
-    - [Bus voltage](#bus-voltage-field-2)
-    - [Boot counter](#boot-counter-field-3)
-    - [Temperature, humidity](environmental-readings-field-4)
-    - [Particulate matter](#particulate-matter-field-5)
-    - [Dust](#dust-field-6)
-    - [TVOC](#tvoc-field-7)
+	- [port 1](#port-1)
+	- [Bitmap fields and associated fields](#bitmap-fields-and-associated-fields)
+	- [Battery Voltage (field 0)](#battery-voltage-field-0)
+	- [System Voltage (field 1)](#system-voltage-field-1)
+	- [Bus Voltage (field 2)](#bus-voltage-field-2)
+	- [Boot counter (field 3)](#boot-counter-field-3)
+	- [Environmental readings (field 4)](#environmental-readings-field-4)
+	- [Particulate Matter (field 5)](#particulate-matter-field-5)
+	- [Dust (field 6)](#dust-field-6)
+	- [TVOC (field 7)](#tvoc-field-7)
 - [Data Formats](#data-formats)
-    - [uint16](#uint16)
-    - [int16](#int16)
-    - [uint8](#uint8)
-    - [int32](#int32)
-    - [float32](#float32)
+	- [uint16](#uint16)
+	- [int16](#int16)
+	- [uint8](#uint8)
+	- [int32](#int32)
+	- [float32](#float32)
 - [Commands](#commands)
-    - [`debugmask`](#debugmask)
-    - [`run`, `stop`](#run-stop)
-    - [`stats`](#stats)
-    - [`wake`](#wake)
+	- [`debugmask`](#debugmask)
+	- [`run`, `stop`](#run-stop)
+	- [`stats`](#stats)
+	- [`wake`](#wake)
 - [Required libraries](#required-libraries)
 - [Meta](#meta)
-    - [Release Notes](#release-notes)
-    - [Trademarks and copyright](#trademarks-and-copyright)
+	- [Release Notes](#release-notes)
+	- [Trademarks and copyright](#trademarks-and-copyright)
+	- [License](#license)
+	- [Support Open Source Hardware and Software](#support-open-source-hardware-and-software)
 
 <!-- /TOC -->
 <!-- markdownlint-restore -->
 <!-- Due to a bug in Markdown TOC, the table is formatted incorrectly if tab indentation is set other than 4. Due to another bug, this comment must be *after* the TOC entry. -->
 
 ## System configuration
+
+The Model 4841 combines an MCCI Catena&reg; 4630 LPWAN radio sensor board with a Plantower PMS7003 air quality sensor. This firmware runs on the STM32L0 processor in the 4630.
 
 ### Sample interval
 
@@ -71,9 +75,9 @@ This firmware has the following features.
 
 - Data is prepared using port 5 format 0x21, and transmitted to the network.
 
-- The sketch uses [gb88/SGPC3](https://github.com/gb88/SGPC3) library to measure TVOC value and transmit over network.
+- The sketch uses [mcci-catena/SGPC3](https://github.com/mcci-catena/SGPC3) library to measure TVOC value and transmit over network. This library is based on the [gb88/SGPC3](https://github.com/gb88/SGPC3) library, with light modifications for LoRaWAN compatibility.
 
-- The sketch uses the [Catena Arduino Platform](https://github.com/mcci-catena/Catena-Arduino-Platform.git), and therefore the basic provisioning commands from the platform are always availble while the sketch is running. This also allows user commands to be added if desired.
+- The sketch uses the [Catena Arduino Platform](https://github.com/mcci-catena/Catena-Arduino-Platform.git), and therefore the basic provisioning commands from the platform are always available while the sketch is running. This also allows user commands to be added if desired.
 
 - The `McciCatena::cPollableObject` paradigm is used to simplify the coordination of the activities described above.
 
@@ -90,7 +94,7 @@ This firmware has the following features.
 
 The primary loop wakes up, read a few predefined registers, scales them, and transmits them in a form similar to sensor1 app.
 
-It can transmit up to six totals. We will sens temp sensor data, Air quality, dust particle and boot count. We will honor the cycle-time command.
+It can transmit up to six totals. We will sense temp sensor data, Air quality, dust particle and boot count. We will honor the cycle-time command.
 
 Thus, if we sample demand every six minutes, we'll get the value recorded for the most recent six minutes. We may (and in general, we will) have sampling error and drift, but the averaging will be roughly equivalent.
 
@@ -157,9 +161,9 @@ Field 3, if present, is a counter of number of recorded system reboots, modulo 2
 
 Field 4, if present, has two environmental readings as four bytes of data.
 
-  -  The first two bytes are a int16 representing the temperature (divide by 256 to get degrees Celsius).
+- The first two bytes are a int16 representing the temperature (divide by 256 to get degrees Celsius).
 
-  -  The next two bytes are a uint16 representing the relative humidity (divide by 65535 to get percent). This field can represent humidity from 0% to 100%, in steps of roughly 0.001529%.
+- The next two bytes are a uint16 representing the relative humidity (divide by 65535 to get percent). This field can represent humidity from 0% to 100%, in steps of roughly 0.001529%.
 
 ### Particulate Matter (field 5)
 
@@ -319,6 +323,14 @@ v1.1.0 has the following changes.
 
 MCCI and MCCI Catena are registered trademarks of MCCI Corporation. LoRa is a registered trademark of Semtech Corporation. LoRaWAN is a registered trademark of the LoRa Alliance.
 
-This document and the contents of this repository are copyright 2019-2020, MCCI Corporation.
+This document and the contents of this repository are copyright 2019-2021, MCCI Corporation.
 
-This is published as MCCI document 950001548.
+### License
+
+This repository is released under the [MIT](./LICENSE) license. Commercial licenses are also available from MCCI Corporation.
+
+### Support Open Source Hardware and Software
+
+MCCI invests time and resources providing this open source code, please support MCCI and open-source hardware by purchasing products from MCCI, Adafruit and other open-source hardware/software vendors!
+
+For information about MCCI's products, please visit [store.mcci.com](https://store.mcci.com/).

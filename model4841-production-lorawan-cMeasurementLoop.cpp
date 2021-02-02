@@ -1,6 +1,6 @@
 /*
 
-Module: catena4630-production-lorawan-cMeasurementLoop.cpp
+Module: model4841-production-lorawan-cMeasurementLoop.cpp
 
 Function:
     Sensor sketch measuring and transmitting air-quality info.
@@ -13,7 +13,7 @@ Author:
 
 */
 
-#include "catena4630-production-lorawan-cMeasurementLoop.h"
+#include "model4841-production-lorawan-cMeasurementLoop.h"
 
 #ifndef ARDUINO_MCCI_CATENA_4630
 # error "This sketch targets the MCCI Catena 4630"

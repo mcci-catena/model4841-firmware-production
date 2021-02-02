@@ -1,4 +1,4 @@
-# Understanding MCCI Catena data sent on port 1 format 0x20/0x21
+# Understanding MCCI Catena data sent on port 1 format 0x21
 
 <!-- markdownlint-disable MD033 -->
 <!-- markdownlint-capture -->
@@ -31,15 +31,13 @@
 
 ## Overall Message Format
 
-Port 1 and port 5 format 0x20 and 0x21 uplink messages are sent by Catena4630-pms7003-lora and related sketches. As demos, we use the discriminator byte in the same way as many of the sketches in the Catena-Sketches collection.
-
-Format 0x20 and 0x21 are practically identical, except that 0x20 transmits barometric pressure, but 0x21 does not.
+Port 1 format 0x21 uplink messages are sent by model4841-production-lorawan and related sketches. As demos, we use the discriminator byte in the same way as many of the sketches in the Catena-Sketches collection.
 
 Each message has the following layout.
 
 byte | description
 :---:|:---
-0    | magic number 0x20 or 0x21
+0    | magic number 00x21
 1    | bitmap encoding the fields that follow
 2..n | data bytes; use bitmap to map these bytes onto fields.
 
@@ -55,8 +53,8 @@ Bitmap bit | Length of corresponding field (bytes) | Data format |Description
 1 | 2 | [int16](#int16) | [System voltage](#sys-voltage-field-1)
 2 | 2 | [int16](#int16) | [Bus voltage](#bus-voltage-field-2)
 3 | 1 | [uint8](#uint8) | [Boot counter](#boot-counter-field-3)
-4 | 6 | [int16](#int16), [uint16](#uint16), [uint16](#uint16) | [Temperature, Pressure (if format 0x20), Humidity](environmental-readings-field-4)
-5 | 6 or 8 | _[uint16](#uint16)_, 3 times [uflt16](#uflt16) | [_TVOC (if port 5)_, Particle Concentrations](#particle-concentrations-field-5)
+4 | 4 | [int16](#int16), [uint16](#uint16) | [Temperature, Humidity](environmental-readings-field-4)
+5 | 6 | 3 times [uflt16](#uflt16) | [Particle Concentrations](#particle-concentrations-field-5)
 6 | 14 | 6 times [uflt16](#uflt16) | [Dust Concentrations](#dust-concentrations-field-6)
 7 | 2 | [uint16](#uint16) | [TVOC](#tvoc-field-7)
 
@@ -90,20 +88,23 @@ Field 4, if present, has three environmental readings as four bytes of data.
 
 ### Air quality (field 5)
 
-Field 5, if present, has optional TVOC (if port 5), followed by nine particle concentrations as 18 bytes of data, each as a [`uflt16`](#uflt16).  `uflt16` values respresent values in [0, 1).
+Field 5, if present, has nine particle concentrations as 18 bytes of data, each as a [`uflt16`](#uflt16).  `uflt16` values respresent values in [0, 1).
 
 The fields in order are:
 
-- TVOC (in PPB) -- only for port 5.
 - PM1.0, PM2.5 and PM10 concentrations. Multiply by 65536 to get concentrations in &mu;g per cubic meter.
 
 ### Dust concentrations (field 6)
+
+Field 6, if present, has six dust concentrations.
+
+The fields in order are:
 
 - Dust concentrations for particles of size 0.3, 0.5, 1.0, 2.5, 5.0 and 10 microns. Transmitted as [`uflt16`](#uflt16`). Multiply by 65536 to get particle counts per 0.1L of air.
 
 ### TVOC (field 7)
 
-This field is only defined for port 1; it's not used for port 5. It carries TVOC (total volatile organic compounds) in parts per billion, transmitted as [`uint16`](#uint16).
+This field carries TVOC (total volatile organic compounds) in parts per billion, transmitted as [`uint16`](#uint16).
 
 ## Data Formats
 
@@ -115,11 +116,11 @@ an integer from 0 to 65536.
 
 ### int16
 
-a signed integer from -32,768 to 32,767, in two's complement form. (Thus 0..0x7FFF represent 0 to 32,767; 0x8000 to 0xFFFF represent -32,768 to -1).
+A signed integer from -32,768 to 32,767, in two's complement form. (Thus 0..0x7FFF represent 0 to 32,767; 0x8000 to 0xFFFF represent -32,768 to -1).
 
 ### uint8
 
-an integer from 0 to 255.
+An integer from 0 to 255.
 
 ### uflt16
 
@@ -150,7 +151,7 @@ Floating point mavens will immediately recognize:
 
 The following input data can be used to test decoders.
 
-`20 01 18 00`
+`21 01 18 00`
 
 ```json
 {
@@ -158,7 +159,7 @@ The following input data can be used to test decoders.
 }
 ```
 
-`20 02 F8 00`
+`21 02 F8 00`
 
 ```json
 {
@@ -166,7 +167,7 @@ The following input data can be used to test decoders.
 }
 ```
 
-`20 04 7f ff`
+`21 04 7f ff`
 
 ```json
 {
@@ -174,7 +175,7 @@ The following input data can be used to test decoders.
 }
 ```
 
-`20 08 2a`
+`21 08 2a`
 
 ```json
 {
@@ -182,22 +183,20 @@ The following input data can be used to test decoders.
 }
 ```
 
-`20 10 14 00 5f 8f 99 99`
+`21 10 14 00 99 99`
 
 ```json
 {
-  "p": 978.52,
   "rh": 60,
   "tDewC": 11.999894615745436,
   "tempC": 20
 }
 ```
 
-`20 10 1e 00 63 54 99 99`
+`21 10 1e 00 99 99`
 
 ```json
 {
-  "p": 1017.12,
   "rh": 60,
   "tDewC": 21.390006900020513,
   "tHeatIndexF": 91.09765809999998,
@@ -205,7 +204,7 @@ The following input data can be used to test decoders.
 }
 ```
 
-`20 20 6c 80 7c 80 89 60`
+`21 20 6c 80 7c 80 89 60`
 
 ```json
 {
@@ -217,7 +216,7 @@ The following input data can be used to test decoders.
 }
 ```
 
-`20 40 9f a0 af a0 bb b8 bf a0 c9 c4 cb b8`
+`21 40 9f a0 af a0 bb b8 bf a0 c9 c4 cb b8`
 
 ```json
 {
@@ -232,7 +231,7 @@ The following input data can be used to test decoders.
 }
 ```
 
-`20 80 56 78`
+`21 80 56 78`
 
 ```json
 {
@@ -240,7 +239,7 @@ The following input data can be used to test decoders.
 }
 ```
 
-`20 ff 20 00 34 cd 4e 66 2a 1e 00 63 54 99 99 6c 80 7c 80 89 60 9f a0 af a0 bb b8 bf a0 c9 c4 cb b8 56 78`
+`21 ff 20 00 34 cd 4e 66 2a 1e 00 99 99 6c 80 7c 80 89 60 9f a0 af a0 bb b8 bf a0 c9 c4 cb b8 56 78`
 
 ```json
 {
@@ -253,7 +252,6 @@ The following input data can be used to test decoders.
     "1.0": 3000,
     "2.5": 4000
   },
-  "p": 1017.12,
   "pm": {
     "10": 300,
     "1.0": 100,
@@ -277,67 +275,59 @@ This repository contains a simple C++ file for generating test vectors.
 Build it from the command line. Using Visual C++:
 
 ```console
-C> cl /EHsc catena-message-port1-format-20-test.cpp
+C> cl /EHsc catena-message-port1-format-21-test.cpp
 Microsoft (R) C/C++ Optimizing Compiler Version 19.16.27031.1 for x64
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
-catena-message-port1-format-20-test.cpp
+catena-message-port1-format-21-test.cpp
 Microsoft (R) Incremental Linker Version 14.16.27031.1
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
-/out:catena-message-port1-format-20-test.exe
-catena-message-port1-format-20-test.obj
+/out:catena-message-port1-format-21-test.exe
+catena-message-port1-format-21-test.obj
 ```
 
 Using GCC or Clang on Linux:
 
 ```bash
-make catena-message-port1-format-20-test
+make catena-message-port1-format-21-test
 ```
 
 (The default make rules should work.)
 
-For usage, read the source or the check the input vector generation file `catena-message-port1-format-20.vec`.
+For usage, read the source or the check the input vector generation file `catena-message-port1-format-21.vec`.
 
 To run it against the test vectors, try:
 
 ```console
-$ catena-message-port1-format-20-test < catena-message-port1-format-20.vec
+$ catena-message-port1-format-21-test < catena-message-port1-format-21.vec
 Input a line with name/values pairs
 Vbat 1.5 .
-20 01 18 00
+21 01 18 00
 Vsys -0.5 .
-20 02 f8 00
+21 02 f8 00
 Vbus 10 .
-20 04 7f ff
+21 04 7f ff
 Boot 42 .
-20 08 2a
-Env 20 978.5 60 .
-20 10 14 00 5f 8f 99 99
-Env 30 1017.1 60 .
-20 10 1e 00 63 54 99 99
+21 08 2a
+Env 20 60 .
+21 10 14 00 99 99
+Env 30 60 .
+21 10 1e 00 99 99
 Pm 100 200 300 .
-20 20 6c 80 7c 80 89 60
+21 20 6c 80 7c 80 89 60
 Dust 1000 2000 3000 4000 5000 6000 .
-20 40 9f a0 af a0 bb b8 bf a0 c9 c4 cb b8
+21 40 9f a0 af a0 bb b8 bf a0 c9 c4 cb b8
 TVOC 22136 .
-20 80 56 78
-Vbat 2 Vsys 3.3 Vbus 4.9 Boot 42 Env 30 1017.1 60 Pm 100 200 300 Dust 1000 2000 3000 4000 5000 6000 TVOC 22136 .
-20 ff 20 00 34 cd 4e 66 2a 1e 00 63 54 99 99 6c 80 7c 80 89 60 9f a0 af a0 bb b8 bf a0 c9 c4 cb b8 56 78
+21 80 56 78
+Vbat 2 Vsys 3.3 Vbus 4.9 Boot 42 Env 30 60 Pm 100 200 300 Dust 1000 2000 3000 4000 5000 6000 TVOC 22136 .
+21 ff 20 00 34 cd 4e 66 2a 1e 00 99 99 6c 80 7c 80 89 60 9f a0 af a0 bb b8 bf a0 c9 c4 cb b8 56 78
 ```
 
 ## The Things Network Console decoding script
 
-The repository contains a generic script that decodes messages in this format, for [The Things Network console](https://console.thethingsnetwork.org).
-
-You can get the latest version on GitHub:
-
-- in [raw form](https://raw.githubusercontent.com/mcci-catena/MCCI-Catena-PMS7003/master/extra/catena-message-port1-30-decoder-ttn.js)
-- or [view it](https://github.com/mcci-catena/MCCI-Catena-PMS7003/blob/master/extra/catena-message-port1-30-decoder-ttn.js)
+The repository contains a generic script that decodes messages in this format, for [The Things Network console](https://console.thethingsnetwork.org), located [here](extra/catena-message-port1-format-21-decoder-ttn.js).
 
 ## Node-RED Decoding Script
 
-A Node-RED script to decode this data is part of this repository. You can download the latest version from GitHub:
-
-- in [raw form](https://raw.githubusercontent.com/mcci-catena/MCCI-Catena-PMS7003/master/extra/catena-message-port1-20-decoder-node-red.js)
-- or [view it](https://raw.githubusercontent.com/mcci-catena/MCCI-Catena-PMS7003/blob/master/extra/catena-message-port1-20-decoder-node-red.js)
+A Node-RED script to decode this data is part of this repository, located [here](extra/catena-message-port1-format21-decoder-node-red.js).
