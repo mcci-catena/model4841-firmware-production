@@ -141,8 +141,8 @@ void setup()
     setup_printSignOn();
 
     setup_flash();
-    setup_sensors();
     setup_radio();
+    setup_sensors();
     setup_pms7003();
     setup_commands();
     setup_measurement();
