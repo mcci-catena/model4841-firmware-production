@@ -307,6 +307,20 @@ The following additional libraries are used in this project.
 
 ### Release Notes
 
+v1.2.0 has the following changes
+
+- Fix [#1](https://github.com/mcci-catena/model4841-production-lorawan/issues/1): initialize radio before initializing sensors, so that commands are present.
+
+- Using the following libraries:
+
+   | Name | Version | Comments
+   |------|:-------:|:-----------
+   |Catena-Arduino-Platform | 0.20.0.30 | Pick up error fix for 59-day hang
+   |Arduino-LoRaWAN | 0.8.0 |
+   |Arduino-LMIC | 3.3.0 |
+   |MCCIADK | 0.2.2 |
+   |MCCI-Arduino-BSP | 2.8.0 |
+
 v1.1.0 has the following changes.
 
 - Use the following libraries:

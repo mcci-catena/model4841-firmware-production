@@ -49,7 +49,10 @@ using namespace McciCatenaSht3x;
 |
 \****************************************************************************/
 
-constexpr std::uint32_t kAppVersion = McciCatenaPMS7003::makeVersion(1,1,0,0);
+constexpr std::uint32_t kAppVersion = McciCatenaPMS7003::makeVersion(1,2,0,0);
+
+// make sure we pick up library with fixes for 59-day problem.
+static_assert(CATENA_ARDUINO_PLATFORM_VERSION >= CATENA_ARDUINO_PLATFORM_VERSION_CALC(0,20,0,30));
 
 /****************************************************************************\
 |
@@ -141,8 +144,8 @@ void setup()
     setup_printSignOn();
 
     setup_flash();
-    setup_sensors();
     setup_radio();
+    setup_sensors();
     setup_pms7003();
     setup_commands();
     setup_measurement();
