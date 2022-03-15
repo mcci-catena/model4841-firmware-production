@@ -1,6 +1,6 @@
 # Model 4841 Production for LoRaWAN&reg; Technology
 
-This sketch is the production firmware for the MCCI&reg; Model 4841 Air Quality Sensor.
+This sketch is the production firmware for the MCCI&reg; [Model 4841 Air Quality Sensor](https://mcci.io/buy-model4841).
 
 **Contents:**
 <!--
@@ -16,12 +16,13 @@ This sketch is the production firmware for the MCCI&reg; Model 4841 Air Quality 
 <!-- markdownlint-disable -->
 <!-- TOC depthFrom:2 updateOnSave:true -->
 
-- [System configuration](#system-configuration)
-	- [Sample interval](#sample-interval)
+- [Introduction](#introduction)
+- [Installing and Building](#installing-and-building)
+- [Overview](#overview)
 - [Activities](#activities)
 - [Primary Data Acquisition](#primary-data-acquisition)
 - [Uplink Data](#uplink-data)
-	- [port 1](#port-1)
+	- [Port 1](#port-1)
 	- [Bitmap fields and associated fields](#bitmap-fields-and-associated-fields)
 	- [Battery Voltage (field 0)](#battery-voltage-field-0)
 	- [System Voltage (field 1)](#system-voltage-field-1)
@@ -41,7 +42,6 @@ This sketch is the production firmware for the MCCI&reg; Model 4841 Air Quality 
 	- [`debugmask`](#debugmask)
 	- [`run`, `stop`](#run-stop)
 	- [`stats`](#stats)
-	- [`wake`](#wake)
 - [Required libraries](#required-libraries)
 - [Meta](#meta)
 	- [Release Notes](#release-notes)
@@ -53,11 +53,15 @@ This sketch is the production firmware for the MCCI&reg; Model 4841 Air Quality 
 <!-- markdownlint-restore -->
 <!-- Due to a bug in Markdown TOC, the table is formatted incorrectly if tab indentation is set other than 4. Due to another bug, this comment must be *after* the TOC entry. -->
 
-## System configuration
+## Introduction
 
-The Model 4841 combines an MCCI Catena&reg; 4630 LPWAN radio sensor board with a Plantower PMS7003 air quality sensor. This firmware runs on the STM32L0 processor in the 4630.
+The Model 4841 combines an MCCI Catena&reg; 4630 LPWAN radio sensor board with a Plantower PMS7003 air quality sensor. The 4630 has an STM32L0 processor, a LoRa radio based on the Semtech SX1276, a Sensirion SHT3x temperature/humidity sensor, and a Sensirion SGPC3 gas sensor on board. This firmware runs on the STM32L0 processor in the 4630.
 
-### Sample interval
+## Installing and Building
+
+The best way to install and build this software is to start with [COLLECTION-model4841](https://github.com/mcci-catena/COLLECTION-model4841), a top-level collection that includes this repository as a submodule, along with the required libraries and a build procedure that uses the [`arduino-cli`](https://arduino.github.io/arduino-cli/). It is, of course, also possible to install the libraries individually and build with a variety of build procedures. See "[Required libraries](#required-libraries)" for details.
+
+## Overview
 
 The primary function of the Catena 4630 is to capture and transmit real-time air quality and dust particle data to remote data consumers, using LoRaAWAN. For consistency with MCCI's other monitoring products, information is captured and transmitted at six minute intervals.
 
@@ -69,11 +73,11 @@ This firmware has the following features.
 
 - Every measurement cycle, the sketch powers up the PMS7003. It then takes a sequence of 10 measurements. Data is gathered from the atmospheric PM serias and the dust series. For each series, outliers are discarded using an IQR1.5 filter, and then the remaining data is averaged.
 
-- Current environmental conditions are read from the SHT3x.
+- Temperature and humidity are measured by the SHT3x.
 
-- Current air quality value (TVOC) read from the SGPC3 sensor.
+- Air quality value (Total Volatile Organic Compounds, or "TVOC") read from the SGPC3 sensor.
 
-- Data is prepared using port 5 format 0x21, and transmitted to the network.
+- Data is encoded into binary and transmitted to the LoRaWAN network, using LoRaWAN port 1, as a class A device.
 
 - The sketch uses [mcci-catena/SGPC3](https://github.com/mcci-catena/SGPC3) library to measure TVOC value and transmit over network. This library is based on the [gb88/SGPC3](https://github.com/gb88/SGPC3) library, with light modifications for LoRaWAN compatibility.
 
@@ -84,7 +88,7 @@ This firmware has the following features.
 ## Activities
 
 1. [Setup](#setup): an activity that launches the other activities.
-2. [Primary Data Acquisition](#primary-data-acquisition): the activity that configures the PMS7003, and then takes data. It wakes up periodically, poll registers, computes and send an uplink on LoRaWAN port 1.
+2. [Primary Data Acquisition](#primary-data-acquisition): the activity that configures the PMS7003, and then takes data. It wakes up periodically, poll registers, computes and send an uplink on LoRaWAN port 5.
 3. [LoRaWAN control](#lorawan-control): this activity manages transmission and reception of data over LoRaWAN.
 4. [Local serial command processor](#commands)
 5. *[Future]* A firmware update activity
@@ -92,15 +96,13 @@ This firmware has the following features.
 
 ## Primary Data Acquisition
 
-The primary loop wakes up, read a few predefined registers, scales them, and transmits them in a form similar to sensor1 app.
+The primary loop wakes up based on elapsed time, makes a series of measurements, scales them, and transmits them.
 
-It can transmit up to six totals. We will sense temp sensor data, Air quality, dust particle and boot count. We will honor the cycle-time command.
-
-Thus, if we sample demand every six minutes, we'll get the value recorded for the most recent six minutes. We may (and in general, we will) have sampling error and drift, but the averaging will be roughly equivalent.
+It senses temp sensor data, TVOC data, particulat matter data, dust particle concentrations, battery level, and boot count. By default, the cycle time is every six minutes, but this can be adjusted using the cycle-time downlink.
 
 ## Uplink Data
 
-### port 1
+### Port 1
 
 Port 1 is used for normal uplink demand data. It is the usual bitmap/data formant.
 
@@ -280,11 +282,6 @@ Start or stop the measurement loop. After boot, the measurement loop is enabled 
 
 Display the receive statistics. The library keeps track of spurious characters and messages; this is an easy way to get access.
 
-### `wake`
-
-Bring up the PMS7003. This event is abstract -- it requests the library to do whatever's needed (powering up the PMS7003, waking it up, etc.) to get the PMS7003 to normal state.
-
-
 ## Required libraries
 
 The following Arduino standard libraries are used in this project.
@@ -306,6 +303,11 @@ The following additional libraries are used in this project.
 ## Meta
 
 ### Release Notes
+
+v1.3.0 has the following changes
+
+- Updated libraries, thereby adding the `lorawan status` and `lorawan subband` commands, thereby causing a minor version bump.
+- Updated COLLECTION to use common build system.
 
 v1.2.0 has the following changes
 
@@ -337,11 +339,11 @@ v1.1.0 has the following changes.
 
 MCCI and MCCI Catena are registered trademarks of MCCI Corporation. LoRa is a registered trademark of Semtech Corporation. LoRaWAN is a registered trademark of the LoRa Alliance.
 
-This document and the contents of this repository are copyright 2019-2021, MCCI Corporation.
+This document and the contents of this repository are copyright 2019-2022, MCCI Corporation.
 
 ### License
 
-This repository is released under the [MIT](./LICENSE) license. Commercial licenses are also available from MCCI Corporation.
+This repository is released under the [MIT](./LICENSE.md) license. Commercial licenses are also available from MCCI Corporation.
 
 ### Support Open Source Hardware and Software
 
