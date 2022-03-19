@@ -304,6 +304,19 @@ The following additional libraries are used in this project.
 
 ### Release Notes
 
+Note that the libraries mentioned here are actually govenered by the versions chosen in [COLLECTION-model4841](https://github.com/mcci-catena/COLLECTION-model4841).
+
+v1.3.1 has the following changes. All are patch changes in libraries, so there's only a patch-release bump.
+
+- Update the following libraries.
+
+   | Name | Version | Comments
+   |------|:-------:|:-----------
+   | BSP  | 3.0.5   | Pick up error fix for USB hot interrupt problem
+   | arduino-lmic | 4.2.0-pre1 | Pick up network time support.
+   | MCCI-Catena-PMS7003 | 0.1.2 | Pick up official relase (no code changes)
+   | MCCI-Catena-SHT3x | 0.2.1 | pick up official release (no code changes)
+
 v1.3.0 has the following changes
 
 - Updated libraries, thereby adding the `lorawan status` and `lorawan subband` commands, thereby causing a minor version bump.
