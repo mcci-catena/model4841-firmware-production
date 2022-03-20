@@ -1,5 +1,7 @@
 # Model 4841 Production for LoRaWAN&reg; Technology
 
+[![GitHub release](https://img.shields.io/github/release/mcci-catena/model4841-production-lorawan.svg)](https://github.com/mcci-catena/model4841-production-lorawan/releases/latest) [![GitHub commits](https://img.shields.io/github/commits-since/mcci-catena/model4841-production-lorawan/latest.svg)](https://github.com/mcci-catena/model4841-production-lorawan/compare/v1.3.2...main)
+
 This sketch is the production firmware for the MCCI&reg; [Model 4841 Air Quality Sensor](https://mcci.io/buy-model4841).
 
 **Contents:**
@@ -306,6 +308,12 @@ The following additional libraries are used in this project.
 
 Note that the libraries mentioned here are actually govenered by the versions chosen in [COLLECTION-model4841](https://github.com/mcci-catena/COLLECTION-model4841).
 
+v1.3.2 only has changes in the build system.
+
+   | Name | Version | Comments
+   |------|:-------:|:-----------
+   | tools-build-with-cli  | 2.0.1   | set build artifact prefix independtly of sketch name.
+
 v1.3.1 has the following changes. All are patch changes in libraries, so there's only a patch-release bump.
 
 - Update the following libraries.
@@ -356,7 +364,7 @@ This document and the contents of this repository are copyright 2019-2022, MCCI 
 
 ### License
 
-This repository is released under the [MIT](./LICENSE.md) license. Commercial licenses are also available from MCCI Corporation.
+This repository is released under the [MIT license](./LICENSE.md). Commercial licenses are also available from MCCI Corporation.
 
 ### Support Open Source Hardware and Software
 
