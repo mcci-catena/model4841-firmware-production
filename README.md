@@ -20,6 +20,8 @@ This sketch is the production firmware for the MCCI&reg; [Model 4841 Air Quality
 
 - [Introduction](#introduction)
 - [Installing and Building](#installing-and-building)
+- [Firmware Update via Serial](#firmware-update-via-serial)
+    - [Steps to update a Firmware via Serial](#steps-to-update-a-firmware-via-serial)
 - [Overview](#overview)
 - [Activities](#activities)
 - [Primary Data Acquisition](#primary-data-acquisition)
@@ -62,6 +64,40 @@ The Model 4841 combines an MCCI Catena&reg; 4630 LPWAN radio sensor board with a
 ## Installing and Building
 
 The best way to install and build this software is to start with [COLLECTION-model4841](https://github.com/mcci-catena/COLLECTION-model4841), a top-level collection that includes this repository as a submodule, along with the required libraries and a build procedure that uses the [`arduino-cli`](https://arduino.github.io/arduino-cli/). It is, of course, also possible to install the libraries individually and build with a variety of build procedures. See "[Required libraries](#required-libraries)" for details.
+
+## Firmware Update via Serial
+
+This is a feature to load the firmware via serial without getting the board into DFU mode.
+Version 1.4.0 and later version of the sketch supports this feature.
+
+### Steps to update a Firmware via Serial
+
+- As the feature is available from version 1.4.0 and later of the sketch, the existing firmware on board should be the version v1.4.0 or later version firmware.
+- Clone the repository in a desired location.
+- Place the bin file of the sketch inside "extra" folder of the repository.
+- Open the cmd prompt and navigate to "extra" folder where the bin file was placed.
+- Run the following example command:
+
+    ```py
+    python catena-download.py -v -c "system update" model4841-production-lorawan.ino.bin COM10
+    ```
+- This will load the new firmware in Catena board with a "Success!" message.
+
+    ```
+    D:\IoT-Projects\Model4841\sketches\model4841-production-lorawan\extra>python catena-download.py -v -c "system update" model4841-production-lorawan.ino.bin COM10
+    Read file: size 104108
+    Using port COM10
+    system update
+    Update firmware: echo off, timeout 2 seconds
+    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<OK<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    Success!
+    ```
+- Once the firmware is loaded, RESET Model 4841, this will start to run the newly loaded sketch in Model 4841.
+
+**Note**
+- COM port (COM10 used in example command) might vary for different devices. Use the COM port which is enumerated for the Catena board in use.
+- To find the COM port, open the "device manager" from start menu and find the COM port which is enumerated for the Catena board in use.
+- Make sure the COM port is not connected to any Serial monitors.
 
 ## Overview
 
@@ -307,6 +343,16 @@ The following additional libraries are used in this project.
 ### Release Notes
 
 Note that the libraries mentioned here are actually govenered by the versions chosen in [COLLECTION-model4841](https://github.com/mcci-catena/COLLECTION-model4841).
+
+v1.4.0 has the following changes.
+
+- Updated the production sketch with a new feature "Firmware Update via Serial" to avoid getting the board into DFU mode.
+- Use the following library:
+
+   | Name | Version | Comments
+   |------|:-------:|:-----------
+   | BSP  | 3.1.0   | Pick up latest release
+   | Catena-Arduino-Platform | 0.21.2 | Pick up bug fixes
 
 v1.3.2 only has changes in the build system.
 
